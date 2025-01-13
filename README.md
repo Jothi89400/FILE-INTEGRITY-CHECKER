@@ -49,6 +49,7 @@ chunks, making it efficient for larger directories and files.
 
 # OUTPUT
 
-![file integrity checker output](https://github.com/user-attachments/assets/763fecf1-7fed-46fe-ac5b-2800dcf960d4)
+![file integrity checker output](https://github.com/user-attachments/assets/9df72283-261f-45d8-94a6-e5e51fca544b)
+
 
 
