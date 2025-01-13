@@ -1,68 +1,38 @@
 import hashlib
 import os
-import json
+import time
 
-# Function to calculate the hash of a file
+# Function to calculate hash of a file
 def calculate_hash(file_path, hash_algorithm='sha256'):
-    hash_func = hashlib.new(hash_algorithm)
-    try:
-        with open(file_path, 'rb') as f:
-            while chunk := f.read(8192):
-                hash_func.update(chunk)
-    except FileNotFoundError:
-        print(f"Error: File '{file_path}' not found.")
-        return None
-    return hash_func.hexdigest()
+    hash_obj = hashlib.new(hash_algorithm)
+    with open(file_path, 'rb') as file:
+        while chunk := file.read(8192):  # Read the file in chunks
+            hash_obj.update(chunk)
+    return hash_obj.hexdigest()
 
-# Function to create a baseline of file hashes
-def create_baseline(directory, output_file, hash_algorithm='sha256'):
-    baseline = {}
-    for root, _, files in os.walk(directory):
-        for file in files:
-            file_path = os.path.join(root, file)
-            baseline[file_path] = calculate_hash(file_path, hash_algorithm)
-
-    with open(output_file, 'w') as f:
-        json.dump(baseline, f, indent=4)
-
-    print(f"Baseline created and saved to '{output_file}'.")
-
-# Function to check for file changes against the baseline
-def check_integrity(baseline_file, hash_algorithm='sha256'):
-    try:
-        with open(baseline_file, 'r') as f:
-            baseline = json.load(f)
-    except FileNotFoundError:
-        print(f"Error: Baseline file '{baseline_file}' not found.")
+# Function to monitor file integrity
+def monitor_file_integrity(file_path, hash_algorithm='sha256', interval=10):
+    if not os.path.exists(file_path):
+        print(f"Error: The file {file_path} does not exist.")
         return
+    
+    print(f"Monitoring file: {file_path}")
+    initial_hash = calculate_hash(file_path, hash_algorithm)
+    print(f"Initial {hash_algorithm.upper()} hash: {initial_hash}")
 
-    current_state = {}
-    for file_path in baseline.keys():
-        current_state[file_path] = calculate_hash(file_path, hash_algorithm)
+    while True:
+        time.sleep(interval)  # Wait for the specified interval before checking again
+        current_hash = calculate_hash(file_path, hash_algorithm)    
+        if current_hash != initial_hash:
+            print(f"WARNING: File integrity compromised! Hash changed.")
+            print(f"Old Hash: {initial_hash}")
+            print(f"New Hash: {current_hash}")
+            initial_hash = current_hash  # Update hash to the new value
+        else:
+            print(f"File {file_path} is intact.")
 
-    for file_path, baseline_hash in baseline.items():
-        current_hash = current_state.get(file_path)
+# Example usage
+file_to_monitor = 'C:\\Users\\LENOVO\\Documents\\text file.txt'  # Replace with the file you want to monitor
+monitor_file_integrity(file_to_monitor)
 
-        if current_hash is None:
-            print(f"File missing: {file_path}")
-        elif current_hash != baseline_hash:
-            print(f"File changed: {file_path}")
 
-    for file_path in current_state.keys() - baseline.keys():
-        print(f"New file detected: {file_path}")
-
-if __name__ == "__main__":
-    print("File Integrity Checker")
-    print("1. Create baseline")
-    print("2. Check file integrity")
-    choice = input("Enter your choice (1 or 2): ")
-
-    if choice == '1':
-        directory = input("Enter the directory to monitor: ")
-        output_file = input("Enter the output file for the baseline (e.g., baseline.json): ")
-        create_baseline(directory, output_file)
-    elif choice == '2':
-        baseline_file = input("Enter the baseline file (e.g., baseline.json): ")
-        check_integrity(baseline_file)
-    else:
-        print("Invalid choice. Please enter 1 or 2.")
