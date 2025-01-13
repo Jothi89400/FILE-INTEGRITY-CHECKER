@@ -46,3 +46,9 @@ user provides the directory and the output file for the baseline. When checking 
 
 The script handles errors like missing files or permission issues without crashing. It also optimizes memory usage by processing files in 
 chunks, making it efficient for larger directories and files.
+
+# OUTPUT
+
+![file integrity checker output](https://github.com/user-attachments/assets/763fecf1-7fed-46fe-ac5b-2800dcf960d4)
+
+
