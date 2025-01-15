@@ -8,7 +8,7 @@
 
 **DOMAIN**: Cyber Security & Ethical Hacking
 
-**BATCH DURATION**: 5th, 2025 to February 5th, 2025
+**BATCH DURATION**: January 5th, 2025 to February 5th, 2025
 
 **MENTOR NAME**: NEELA SANTHOSH
 
